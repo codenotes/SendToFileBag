@@ -203,6 +203,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	std::wstring ws;
 	std::string dumpdir;
 
+
+	//if (__argc <= 1)
+	//	return 0;
 	//auto s = GetClipboardText();
 	//auto b = dirOrFileExists(s);
 	//char temp[255];
@@ -211,6 +214,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	auto cb = GetClipboardText();
 	auto files=split(cb.c_str(), '\n');
+
+	if (files.size() == 0)
+	{
+		MessageBoxA(0, "No files or dirs on clipboard", "!", MB_OK);
+		return 0;
+	}
+	//lets see if it is really a file
+	if (!dirOrFileExists(files[0]))
+	{
+
+		MessageBoxA(0, "No files or dirs on clipboard that actually exist", "!", MB_OK);
+		return 0;
+	}
+
+
 	string executethis;
 	string base;
 	string lastdir;
