@@ -170,6 +170,27 @@ vector<string> split(const char *str, char c = ' ')
 	return result;
 }
 
+
+std::string GetLastErrorAsString()
+{
+	//Get the error message, if any.
+	DWORD errorMessageID = ::GetLastError();
+	if (errorMessageID == 0)
+		return std::string(); //No error message has been recorded
+
+	LPSTR messageBuffer = nullptr;
+	size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
+
+	std::string message(messageBuffer, size);
+
+	//Free the buffer.
+	LocalFree(messageBuffer);
+
+	return message;
+}
+
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR    lpCmdLine,
@@ -208,19 +229,58 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		if (!isFile(f))//found != string::npos) //found it, Junction to DIR
 		{
 			lastdir=f.substr(found+1);
-			sprintf(temp, "create JUNCTION link:%s\nand junction with real path:%s\ndest:%s", lastdir.c_str(), 
-				f.c_str(), destDir.c_str());
+			sprintf(temp, "create JUNCTION link:%s\nwith real path:%s\ndest:%s",
+				lastdir.c_str(), //the directory name which is your link by itself
+				f.c_str(), //the complete real path to the real directory
+				destDir.c_str()); //the place you want to put lastDir as link by itself
+			
+			if (IDYES == MessageBoxA(0, temp, "!", MB_YESNOCANCEL))
+			{
+				fs::path dir(destDir);
+				fs::path linkname(lastdir);
+				auto thing = dir / linkname;
+				auto b=CreateSymbolicLinkA(thing.string().c_str(),
+					f.c_str(),
+					SYMBOLIC_LINK_FLAG_DIRECTORY
+				);
+
+				if (!b)
+				{
+					auto error=GetLastErrorAsString();
+					MessageBoxA(0, error.c_str(), "Error", MB_OK);
+
+				}
+			}
+
 		}
 		else if( dirOrFileExists(f)) //hard link to file
 		{
-			sprintf(temp, "create hard file link:%s\nand junction with real path:%s\ndest:%s", fname, 
-				f.c_str(), destDir.c_str());
+			sprintf(temp, "create hard file link:\n%s\nwith real path:\n%s\ndest:\n%s",
+				fname,  //simple link name (the file by itself)
+				f.c_str(), //the complete real path to the file
+				destDir.c_str()); //the place you want to put the fname link into
+			if (IDYES == MessageBoxA(0, temp, "!", MB_YESNOCANCEL))
+			{
 
+				fs::path dir(destDir);
+				fs::path linkname(fname);
+				auto thing = dir / linkname;
+				auto b = CreateSymbolicLinkA(thing.string().c_str(),
+					f.c_str(),
+					0 //means its a file
+				);
+
+				if (!b)
+				{
+					MessageBoxA(0, "That didn't work", "Error", MB_OK);
+				}
+			}
+
+		
 		}
 
-		//CreateSymbolicLink()
+		
 
-		MessageBoxA(0, temp, "!", MB_OK);
 	}
 
 
