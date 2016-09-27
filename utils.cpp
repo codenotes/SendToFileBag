@@ -1,11 +1,23 @@
 //#include "utils.h"
 #include "stdafx.h"
-
+#include <stdio.h>
 
 bool isFile(const std::string& path)
 {
 
-	return PathFileExistsA(path.c_str());
+	//return PathFileExistsA(path.c_str());
+	
+	FILE *fp;
+	fpos_t fsize = 0;
+
+	if (!fopen_s(&fp, path.c_str(), "r"))
+	{
+		fseek(fp, 0, SEEK_END);
+		fgetpos(fp, &fsize);
+		fclose(fp);
+	}
+
+	return fsize > 0;
 	//struct stat buf;
 	//stat(path.c_str(), &buf);
 
@@ -19,7 +31,7 @@ bool dirOrFileExists(const std::string& path)
 	auto bisDir = (dwAttrib != INVALID_FILE_ATTRIBUTES &&
 		(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 
-	auto bisFile = PathFileExistsA(path.c_str());
+	auto bisFile = isFile(path.c_str());
 
 	return (bisDir || bisFile);
 
@@ -155,4 +167,11 @@ std::string GetLastErrorAsString()
 	LocalFree(messageBuffer);
 
 	return message;
+}
+
+std::string strip(string source)
+{
+	source.erase(std::remove(source.begin(), source.end(), '\r'), source.end());
+	source.erase(std::remove(source.begin(), source.end(), '\n'), source.end());
+	return source;
 }

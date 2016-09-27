@@ -46,3 +46,5 @@ vector<string> split(const char *str, char c = ' ');
 
 
 std::string GetLastErrorAsString();
+
+string strip(string source);

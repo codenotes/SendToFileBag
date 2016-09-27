@@ -25,14 +25,26 @@ using namespace std;
 
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-                     _In_opt_ HINSTANCE hPrevInstance,
-                     _In_ LPWSTR    lpCmdLine,
-                     _In_ int       nCmdShow)
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPWSTR    lpCmdLine,
+	_In_ int       nCmdShow)
 {
-    UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
+	UNREFERENCED_PARAMETER(hPrevInstance);
+	UNREFERENCED_PARAMETER(lpCmdLine);
 
-
+//D:\Epic Games\4.13\Engine\Source\ThirdParty\python
+	//string f = "D:\\Epic Games\\4.13\\Engine\\Source\\ThirdParty\\python";
+	//std::size_t found = f.find_last_of("/\\");
+	//auto lastdir = f.substr(found + 1);
+	////if(isFile("D:\\Epic Games\\4.13\\Engine\\Source\\ThirdParty\\python\\"))
+	//if(dirOrFileExists("D:\\Epic Games\\4.13\\Engine\\Source\\ThirdParty\\python\\"))
+	//{
+	//	printf("ys");
+	//}
+	//else
+	//{
+	//	printf("no");
+	//}
 
     // TODO: Place code here.
 	std::wstring ws; 

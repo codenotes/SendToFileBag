@@ -57,8 +57,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return 0;
 	}
 	//lets see if it is really a file
-	files[0] = '"' + files[0] + '"';
-	if (!dirOrFileExists(files[0]))
+	//files[0] = '"' + files[0] + '"';
+	if (!dirOrFileExists(strip(files[0])))
 	{
 
 		MessageBoxA(0, "No files or dirs on clipboard that actually exist", files[0].c_str(), MB_OK);
@@ -76,6 +76,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	for (auto f : files)
 	{
+		f = strip(f);
 		strcpy(fname, f.c_str());
 		PathStripPathA(fname);
 
