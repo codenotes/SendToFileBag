@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SendToFileBag", "SendToFile
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CreateSymLink", "CreateSymLink\CreateSymLink.vcxproj", "{B1DB56DC-E2B4-4598-9AF6-769113FE658F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ReadWriteMetaStream", "ReadWriteMetaStream\ReadWriteMetaStream.vcxproj", "{B29F8B07-756F-464E-85E8-0CE5D2F280DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{B1DB56DC-E2B4-4598-9AF6-769113FE658F}.Release|x64.Build.0 = Release|x64
 		{B1DB56DC-E2B4-4598-9AF6-769113FE658F}.Release|x86.ActiveCfg = Release|Win32
 		{B1DB56DC-E2B4-4598-9AF6-769113FE658F}.Release|x86.Build.0 = Release|Win32
+		{B29F8B07-756F-464E-85E8-0CE5D2F280DB}.Debug|x64.ActiveCfg = Debug|x64
+		{B29F8B07-756F-464E-85E8-0CE5D2F280DB}.Debug|x64.Build.0 = Debug|x64
+		{B29F8B07-756F-464E-85E8-0CE5D2F280DB}.Debug|x86.ActiveCfg = Debug|Win32
+		{B29F8B07-756F-464E-85E8-0CE5D2F280DB}.Debug|x86.Build.0 = Debug|Win32
+		{B29F8B07-756F-464E-85E8-0CE5D2F280DB}.Release|x64.ActiveCfg = Release|x64
+		{B29F8B07-756F-464E-85E8-0CE5D2F280DB}.Release|x64.Build.0 = Release|x64
+		{B29F8B07-756F-464E-85E8-0CE5D2F280DB}.Release|x86.ActiveCfg = Release|Win32
+		{B29F8B07-756F-464E-85E8-0CE5D2F280DB}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
