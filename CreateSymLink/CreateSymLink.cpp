@@ -82,6 +82,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		std::size_t found = f.find_last_of("/\\");
 
+		if(f.size()<=0)
+			continue;
+
 		if (!isFile(f))//found != string::npos) //found it, Junction to DIR
 		{
 			lastdir=f.substr(found+1);
