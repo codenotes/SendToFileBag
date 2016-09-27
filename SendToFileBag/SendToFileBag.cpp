@@ -159,6 +159,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//sprintf(temp, "text:%s isDirOrFile:%d", s.c_str(), b);
 	//MessageBoxA(0, temp, "!", MB_OK);
 
+	if (__argc <= 1)
+		return 0;
+
+	auto first = ws2s(__targv[1]);
+
+	if (first == "/ClearClipboard")
+	{
+		setClipBoardString("");
+		return 0;
+	}
 	
 
 	try
@@ -170,7 +180,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 		else
 		{
-			MessageBoxA(0, "not found envar SEND_TO_DUMP_LOCATION","Error", MB_OK);
+		//	MessageBoxA(0, "not found envar SEND_TO_DUMP_LOCATION","Error", MB_OK);
 		}
 
 	}
@@ -197,8 +207,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		of<<cs<<endl;
 	}
 	
-
-	setClipBoardString(sall);
+	auto lastPaths = GetClipboardText();
+	//MessageBoxA(0, lastPaths.c_str(), "Error", MB_OK);
+	lastPaths += sall;
+	setClipBoardString(lastPaths);
 
 
 
