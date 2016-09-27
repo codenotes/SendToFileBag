@@ -63,7 +63,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	if (first == "/ClearClipboard")
 	{
-		setClipBoardString("");
+		if (OpenClipboard(NULL))
+		{
+			EmptyClipboard();
+			CloseClipboard();
+		}
+		//setClipBoardString("");
 		return 0;
 	}
 	
