@@ -3,14 +3,7 @@
 
 #include "stdafx.h"
 #include "SendToFileBag.h"
-#include <string>
-#include <clocale>
-#include <locale>
-#include <iostream>
-#include <codecvt>
-#include <fstream>
-#include <filesystem>
-#include <sys/stat.h>
+
 
 namespace fs = std::experimental::filesystem;
 
@@ -28,116 +21,6 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 using namespace std;
 
-#ifndef S_ISDIR
-#define S_ISDIR(mode)  (((mode) & S_IFMT) == S_IFDIR)
-#endif
-
-#ifndef S_ISREG
-#define S_ISREG(mode)  (((mode) & S_IFMT) == S_IFREG)
-#endif
-
-bool dirOrFileExists(const std::string& path)
-{
-
-	struct stat buf;
-	stat(path.c_str(), &buf);
-	 
-	return (S_ISREG(buf.st_mode) || S_ISDIR(buf.st_mode));
-
-	//if (s.st_mode & S_IFDIR)
-	//DWORD ftyp = GetFileAttributesA(dirName_in.c_str());
-	//if (ftyp == INVALID_FILE_ATTRIBUTES)
-	//	return false;  //something is wrong with your path!
-
-	//if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
-	//	return true;   // this is a directory!
-
-	//if (ftyp & FILE_ATTRIBUTE_)
-	//	return true;   // this is a directory!
-
-
-	//return false;    // this is not a directory!
-}
-
-
-int StringToWString(std::wstring &ws, const std::string &s)
-{
-	std::wstring wsTmp(s.begin(), s.end());
-
-	ws = wsTmp;
-
-	return 0;
-}
-
-wstring s2ws(const std::string& str)
-{
-	using convert_typeX = std::codecvt_utf8<wchar_t>;
-	std::wstring_convert<convert_typeX, wchar_t> converterX;
-
-	return converterX.from_bytes(str);
-}
-
-string ws2s(const std::wstring& wstr)
-{
-	using convert_typeX = std::codecvt_utf8<wchar_t>;
-	std::wstring_convert<convert_typeX, wchar_t> converterX;
-
-	return converterX.to_bytes(wstr);
-}
-
-
-std::string GetClipboardText()
-{
-	// Try opening the clipboard
-	if (!OpenClipboard(nullptr))
-	{
-	}
-
-			// Get handle of clipboard object for ANSI text
-		HANDLE hData = GetClipboardData(CF_TEXT);
-		if (hData == nullptr)
-		{
-
-			return "";
-
-		}
-
-			// Lock the handle to get the actual text pointer
-		char * pszText = static_cast<char*>(GlobalLock(hData));
-		if (pszText == nullptr)
-		{
-		}
-
-			// Save text in a string class instance
-		std::string text(pszText);
-
-	// Release the lock
-	GlobalUnlock(hData);
-
-	// Release the clipboard
-	CloseClipboard();
-
-	return text;
-}
-
-
-bool setClipBoardString(string source) {
-	if (OpenClipboard(NULL))
-	{
-		HGLOBAL clipbuffer;
-		char * buffer;
-		EmptyClipboard();
-		clipbuffer = GlobalAlloc(GMEM_DDESHARE, source.size() + 1);
-		buffer = (char*)GlobalLock(clipbuffer);
-		strcpy(buffer, LPCSTR(source.c_str()));
-		GlobalUnlock(clipbuffer);
-		SetClipboardData(CF_TEXT, clipbuffer);
-		CloseClipboard();
-		return true;
-	}
-	return false;
-}
-
 
 
 
@@ -148,6 +31,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
+
+
 
     // TODO: Place code here.
 	std::wstring ws; 
@@ -180,6 +65,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 		else
 		{
+
+			dumpdir = "c:\\temp";
 		//	MessageBoxA(0, "not found envar SEND_TO_DUMP_LOCATION","Error", MB_OK);
 		}
 

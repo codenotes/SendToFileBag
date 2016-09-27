@@ -5,16 +5,7 @@
 #include "CreateSymLink.h"
 // SendToFileBag.cpp : Defines the entry point for the application.
 //
-#include <string>
-#include <clocale>
-#include <locale>
-#include <iostream>
-#include <codecvt>
-#include <fstream>
-#include <filesystem>
-#include <sys/stat.h>
-#include <vector>
-#include <Shlwapi.h>
+
 
 
 namespace fs = std::experimental::filesystem;
@@ -31,164 +22,9 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
-using namespace std;
-
-#ifndef S_ISDIR
-#define S_ISDIR(mode)  (((mode) & S_IFMT) == S_IFDIR)
-#endif
-
-#ifndef S_ISREG
-#define S_ISREG(mode)  (((mode) & S_IFMT) == S_IFREG)
-#endif
 
 
-bool isFile(const std::string& path)
-{
-	struct stat buf;
-	stat(path.c_str(), &buf);
 
-	return (S_ISREG(buf.st_mode) );
-}
-
-bool dirOrFileExists(const std::string& path)
-{
-
-	struct stat buf;
-	stat(path.c_str(), &buf);
-
-	return (S_ISREG(buf.st_mode) || S_ISDIR(buf.st_mode));
-
-	//if (s.st_mode & S_IFDIR)
-	//DWORD ftyp = GetFileAttributesA(dirName_in.c_str());
-	//if (ftyp == INVALID_FILE_ATTRIBUTES)
-	//	return false;  //something is wrong with your path!
-
-	//if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
-	//	return true;   // this is a directory!
-
-	//if (ftyp & FILE_ATTRIBUTE_)
-	//	return true;   // this is a directory!
-
-
-	//return false;    // this is not a directory!
-}
-
-
-int StringToWString(std::wstring &ws, const std::string &s)
-{
-	std::wstring wsTmp(s.begin(), s.end());
-
-	ws = wsTmp;
-
-	return 0;
-}
-
-wstring s2ws(const std::string& str)
-{
-	using convert_typeX = std::codecvt_utf8<wchar_t>;
-	std::wstring_convert<convert_typeX, wchar_t> converterX;
-
-	return converterX.from_bytes(str);
-}
-
-string ws2s(const std::wstring& wstr)
-{
-	using convert_typeX = std::codecvt_utf8<wchar_t>;
-	std::wstring_convert<convert_typeX, wchar_t> converterX;
-
-	return converterX.to_bytes(wstr);
-}
-
-
-std::string GetClipboardText()
-{
-	// Try opening the clipboard
-	if (!OpenClipboard(nullptr))
-	{
-	}
-
-	// Get handle of clipboard object for ANSI text
-	HANDLE hData = GetClipboardData(CF_TEXT);
-	if (hData == nullptr)
-	{
-
-		return "";
-
-	}
-
-	// Lock the handle to get the actual text pointer
-	char * pszText = static_cast<char*>(GlobalLock(hData));
-	if (pszText == nullptr)
-	{
-	}
-
-	// Save text in a string class instance
-	std::string text(pszText);
-
-	// Release the lock
-	GlobalUnlock(hData);
-
-	// Release the clipboard
-	CloseClipboard();
-
-	return text;
-}
-
-
-bool setClipBoardString(string source) {
-	if (OpenClipboard(NULL))
-	{
-		HGLOBAL clipbuffer;
-		char * buffer;
-		EmptyClipboard();
-		clipbuffer = GlobalAlloc(GMEM_DDESHARE, source.size() + 1);
-		buffer = (char*)GlobalLock(clipbuffer);
-		strcpy(buffer, LPCSTR(source.c_str()));
-		GlobalUnlock(clipbuffer);
-		SetClipboardData(CF_TEXT, clipbuffer);
-		CloseClipboard();
-		return true;
-	}
-	return false;
-}
-
-
-vector<string> split(const char *str, char c = ' ')
-{
-	vector<string> result;
-
-	do
-	{
-		const char *begin = str;
-
-		while (*str != c && *str)
-			str++;
-
-		result.push_back(string(begin, str));
-	} while (0 != *str++);
-
-	return result;
-}
-
-
-std::string GetLastErrorAsString()
-{
-	//Get the error message, if any.
-	DWORD errorMessageID = ::GetLastError();
-	if (errorMessageID == 0)
-		return std::string(); //No error message has been recorded
-
-	LPSTR messageBuffer = nullptr;
-	size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-		NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
-
-	std::string message(messageBuffer, size);
-
-	//Free the buffer.
-	LocalFree(messageBuffer);
-
-	return message;
-}
 
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -221,10 +57,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return 0;
 	}
 	//lets see if it is really a file
+	files[0] = '"' + files[0] + '"';
 	if (!dirOrFileExists(files[0]))
 	{
 
-		MessageBoxA(0, "No files or dirs on clipboard that actually exist", "!", MB_OK);
+		MessageBoxA(0, "No files or dirs on clipboard that actually exist", files[0].c_str(), MB_OK);
 		return 0;
 	}
 
