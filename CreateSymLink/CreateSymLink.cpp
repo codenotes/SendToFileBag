@@ -23,7 +23,112 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
+wchar_t szUserData[264];
 
+BOOL centerWin(HWND hwndDlg)
+{
+
+	auto hwndOwner = GetDesktopWindow();
+	RECT rcOwner, rc, rcDlg;
+
+	GetWindowRect(hwndOwner, &rcOwner);
+	GetWindowRect(hwndDlg, &rcDlg);
+	CopyRect(&rc, &rcOwner);
+
+	// Offset the owner and dialog box rectangles so that right and bottom 
+	// values represent the width and height, and then offset the owner again 
+	// to discard space taken up by the dialog box. 
+
+	OffsetRect(&rcDlg, -rcDlg.left, -rcDlg.top);
+	OffsetRect(&rc, -rc.left, -rc.top);
+	OffsetRect(&rc, -rcDlg.right, -rcDlg.bottom);
+
+	// The new position is the sum of half the remaining space and the owner's 
+	// original position. 
+
+	SetWindowPos(hwndDlg,
+		HWND_TOP,
+		rcOwner.left + (rc.right / 2),
+		rcOwner.top + (rc.bottom / 2),
+		0, 0,          // Ignores size arguments. 
+		SWP_NOSIZE);
+
+
+	SetFocus(GetDlgItem(hwndDlg, IDC_EDIT1));
+	return FALSE;
+}
+
+
+
+LRESULT CALLBACK dlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
+{
+	//std::pair<std::string, std::string>* pUserPass = NULL;
+
+	//if (Msg == WM_INITDIALOG)
+	//{
+	//	SetWindowLongPtr(hDlg, GWLP_USERDATA, lParam);
+	//}
+	//else
+	//{
+	//	//pUserPass = reinterpret_cast<std::pair<std::string, std::string>*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+
+	//}
+
+	switch (Msg)
+	{
+		case WM_INITDIALOG:
+
+			centerWin(hDlg);
+		
+		break;
+
+
+		case WM_COMMAND:
+		{
+			switch (LOWORD(wParam))
+			{
+			case IDOK:
+			{
+		
+		
+				if (!GetDlgItemText(hDlg, IDC_EDIT1, szUserData, 264))
+					*szUserData = 0;
+				PostQuitMessage(0);
+				//if (!GetDlgItemText(hDlg, 26, szPassData, 64))
+			//		*szPassData = 0;
+
+			//	if (pUserPass && szUserData && szPassData)
+			//	{
+				//	std::wstring searchFOlder(szUserData);
+			//		std::wstring wpass(szPassData);
+				//	pUserPass->first = std::string(wuser.begin(), wuser.end());
+				//	pUserPass->second = std::string(wpass.begin(), wpass.end());
+				//}
+				EndDialog(hDlg, IDOK);
+				return 1;
+			}
+			break;
+			case IDCANCEL:
+			{
+				*szUserData = 0;
+				//MessageBoxA(0, "!", "!@", MB_OK);
+				EndDialog(hDlg, IDCANCEL);
+				PostQuitMessage(0);
+				return 1;
+			}
+			break;
+			default:
+				break;
+			}
+			break;
+		}
+		case WM_CLOSE:
+			EndDialog(hDlg, IDCANCEL);
+			return 1;
+		}
+
+	return 0;
+}
 
 
 
@@ -35,10 +140,53 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
+
+	auto hwndOwner = GetDesktopWindow();
+
+
 	// TODO: Place code here.
 	std::wstring ws;
 	std::string dumpdir;
+	bool bCreateSearchFolder = false;
+	string destDir;
 
+	if (__argc <= 1)
+		return 0;
+
+	auto first = ws2s(__targv[1]);
+
+	if (first == "/CreateSearchFolder")
+	{
+		bCreateSearchFolder = true;
+
+		auto gDHandle = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG1), 0, dlgProc);
+
+		ShowWindow(gDHandle, SW_SHOW);
+
+		MSG Msg;
+
+		while (GetMessage(&Msg, NULL, 0, 0) > 0)
+		{
+
+			if (!IsDialogMessage(gDHandle, &Msg))
+			{
+
+				TranslateMessage(&Msg);
+				DispatchMessage(&Msg);
+			}
+
+
+
+		}
+
+		if (*szUserData == 0) //not set, so must be ID_CANCEL
+		{
+			return 0;
+		}
+		//MessageBoxA(0, "!", ws2s(szUserData).c_str(), MB_OK);
+		//return 0;
+
+	}
 
 	//if (__argc <= 1)
 	//	return 0;
@@ -71,8 +219,25 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	string lastdir;
 	char fname[512];
 	char temp[512];
-	
-	string destDir=ws2s(__targv[1]);
+
+
+	if (bCreateSearchFolder)
+	{
+		destDir = ws2s(szUserData); //this came from the dialog box, it sets this in ID_OK
+		//create directory:
+		if (!CreateDirectoryA(destDir.c_str(), 0))
+		{
+			MessageBoxA(0, "Could not create directory", "Error", MB_OK);
+		}
+
+		//Do nothing because destDir was set above from gui input
+		//destDir = ws2s(__targv[2]);
+	}
+	else  //normal flow, first argv is the destination folder
+	{
+
+		destDir=ws2s(__targv[1]);
+	}
 
 	for (auto f : files)
 	{
