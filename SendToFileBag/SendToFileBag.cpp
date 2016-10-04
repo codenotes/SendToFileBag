@@ -22,6 +22,7 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 using namespace std;
 
 
+int ItemStartIndex = 1;
 
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -61,7 +62,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	auto first = ws2s(__targv[1]);
 
-	if (first == "/ClearClipboard")
+	if (  (first == "/ClearClipboard") || (first=="/ClearClipboardAndPaste")  )
 	{
 		if (OpenClipboard(NULL))
 		{
@@ -69,7 +70,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			CloseClipboard();
 		}
 		//setClipBoardString("");
-		return 0;
+		if(first == "/ClearClipboard")
+			return 0;
+
+		ItemStartIndex = 2; //because we don't want to treat the command line flag as if it where a path
 	}
 	
 
@@ -104,7 +108,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	std::ofstream of(dir / file, ios_base::app);
 	//cs=ws2s(lpCmdLine);
 	//std::replace(cs.begin(), cs.end(),' ', '\n');
-	for (int i = 1; i < __argc; i++)
+	for (int i = ItemStartIndex; i < __argc; i++)
 	{
 		cs = ws2s(__targv[i]);
 		sall = sall + cs+"\r\n";
